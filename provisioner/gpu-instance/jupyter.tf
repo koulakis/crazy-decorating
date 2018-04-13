@@ -73,6 +73,12 @@ resource "aws_spot_instance_request" "jupyter" {
     Name = "jupyter"
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir /home/ubuntu/codebase"
+    ]
+  }
+
   provisioner "file" {
     source = "${var.project_directory}"
     destination = "/home/ubuntu/codebase/"
