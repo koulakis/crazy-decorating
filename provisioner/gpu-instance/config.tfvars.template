@@ -1,0 +1,4 @@
+instance_type = "<instance type>"
+project_directory = "<directory of a clone of the project repo -- BEWARE ALL THE CONTENTS OF THIS DIRECTORY WILL BE COPIED TO THE INSTANCE>"
+region = "<aws region>"
+vpc_id = "<vpc id>"
