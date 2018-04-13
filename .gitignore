@@ -1,3 +1,8 @@
 .ipynb_checkpoints
 data
 
+.idea
+*.tfstate*
+plan
+*.tfvars
+*.terraform
