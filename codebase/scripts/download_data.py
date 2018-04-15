@@ -53,7 +53,7 @@ def download_image_list(image_ids, image_id_to_url, output_directory, pool_size,
     pool.join()
 
 
-# In[146]:
+# In[186]:
 
 
 def read_json(filepath):
@@ -70,7 +70,7 @@ def image_id_to_url(filepath):
     
 def images_in_directory(directory):
     return set([
-        int(filename.split('_')[1].split('.')[0]
+        int(filename.split('_')[1].split('.')[0])
         for filename in os.listdir(directory)])
 
 
@@ -122,37 +122,19 @@ get_ipython().system('mkdir -p {missing_images_directory}')
 # In[ ]:
 
 
-dataset = 'train'
-
-iterative_image_download(
-    id_to_url_filepath.format(dataset),
-    images_directory.format(dataset),
-    missing_images_filepath.format(dataset),
-    100)
+get_ipython().run_cell_magic('time', '', "dataset = 'train'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    100)")
 
 
 # In[ ]:
 
 
-dataset = 'validation'
-
-iterative_image_download(
-    id_to_url_filepath.format(dataset),
-    images_directory.format(dataset),
-    missing_images_filepath.format(dataset),
-    100)
+get_ipython().run_cell_magic('time', '', "dataset = 'validation'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    100)")
 
 
 # In[ ]:
 
 
-dataset = 'test'
-
-iterative_image_download(
-    id_to_url_filepath.format(dataset),
-    images_directory.format(dataset),
-    missing_images_filepath.format(dataset),
-    100)
+get_ipython().run_cell_magic('time', '', "dataset = 'test'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    100)")
 
 
 # ## Exporting labels
