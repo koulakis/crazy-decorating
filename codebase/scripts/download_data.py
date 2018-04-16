@@ -27,7 +27,7 @@ def download_image(image_id, url, output_directory, timeout):
         response = requests.get(url, timeout=timeout, stream=True)
         
         if response.status_code != requests.codes.OK:
-            raise 'Request exceeded {} seconds.'.format(timeout)
+            raise Exception('Request exceeded {} seconds.'.format(timeout))
         
         with open(output_path, 'wb') as fh:
             for chunk in response.iter_content(1024 * 1024):
@@ -122,24 +122,72 @@ get_ipython().system('mkdir -p {missing_images_directory}')
 # In[ ]:
 
 
-get_ipython().run_cell_magic('time', '', "dataset = 'train'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    100)")
+get_ipython().run_cell_magic('time', '', "dataset = 'train'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    500)")
 
 
 # In[ ]:
 
 
-get_ipython().run_cell_magic('time', '', "dataset = 'validation'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    100)")
+get_ipython().run_cell_magic('time', '', "dataset = 'validation'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    500)")
 
 
 # In[ ]:
 
 
-get_ipython().run_cell_magic('time', '', "dataset = 'test'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    100)")
+get_ipython().run_cell_magic('time', '', "dataset = 'test'\n\niterative_image_download(\n    id_to_url_filepath.format(dataset),\n    images_directory.format(dataset),\n    missing_images_filepath.format(dataset),\n    500)")
+
+
+# ## Zip and upload to S3
+
+# In[ ]:
+
+
+get_ipython().system('sudo apt-get install zip')
+
+
+# In[ ]:
+
+
+get_ipython().run_cell_magic('time', '', '!zip -r ../data/train_images.zip ../data/train_images/')
+
+
+# In[ ]:
+
+
+get_ipython().run_cell_magic('time', '', '!zip -r ../data/validation_images.zip ../data/validation_images/')
+
+
+# In[ ]:
+
+
+get_ipython().run_cell_magic('time', '', '!zip -r ../data/train_images.zip ../data/train_images/')
+
+
+# In[ ]:
+
+
+get_ipython().system('sudo apt-get install aws-cli')
+
+
+# In[ ]:
+
+
+get_ipython().system('aws s3 cp ../data/train_images.zip s3://furniture-kaggle/')
+get_ipython().system('aws s3 cp ../data/validation_images.zip s3://furniture-kaggle/')
+get_ipython().system('aws s3 cp ../data/test_images.zip s3://furniture-kaggle/')
+
+
+# In[ ]:
+
+
+get_ipython().system('aws s3 cp ../data/missing_images_due_to_bad_download/missing_train.json s3://furniture-kaggle/')
+get_ipython().system('aws s3 cp ../data/missing_images_due_to_bad_download/missing_validation.json s3://furniture-kaggle/')
+get_ipython().system('aws s3 cp ../data/missing_images_due_to_bad_download/missing_test.json s3://furniture-kaggle/')
 
 
 # ## Exporting labels
 
-# In[185]:
+# In[187]:
 
 
 def export_labels(filepath, outputpath):
@@ -150,9 +198,16 @@ def export_labels(filepath, outputpath):
     pd.DataFrame(annotations).to_csv(outputpath, index=False)
 
 
-# In[3]:
+# In[188]:
 
 
 export_labels('../data/train.json', '../data/train-labels.csv')
 export_labels('../data/validation.json', '../data/validation-labels.csv')
+
+
+# In[189]:
+
+
+get_ipython().system('aws s3 cp ../data/train-labels.csv s3://furniture-kaggle/')
+get_ipython().system('aws s3 cp ../data/validation-labels.csv s3://furniture-kaggle/')
 

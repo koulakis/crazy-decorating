@@ -5,3 +5,4 @@ data
 plan
 *.tfvars
 *.terraform
+checkpoints
