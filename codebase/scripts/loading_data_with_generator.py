@@ -229,14 +229,8 @@ test_predictions_dict = dict([[int(x[0]), x[1]] for x in test_predictions])
 # In[ ]:
 
 
-list(test_predictions_dict.items())[0][1].argmax() + 1
-
-
-# In[ ]:
-
-
 def predict_or_1(x):
-    return test_predictions_dict[x].argmax() if x in test_predictions_dict.keys() else 1
+    return test_predictions_dict[x].argmax() + 1 if x in test_predictions_dict.keys() else 1
 
 
 # In[ ]:
