@@ -69,38 +69,21 @@ class DataGenerator(keras.utils.Sequence):
 
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
-        # Initialization
+         # Initialization
         X = np.empty((self.batch_size, *self.dim, self.n_channels))
         y = np.empty((self.batch_size), dtype=int)
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
-            first_time = True
-            counter = 0
-            while True:
-                try:
-                    resolved_ID = ID if first_time else random.choice(self.list_IDs)
-                    image = imread(os.path.join(self.image_directory, 'pic_{}.png'.format(resolved_ID)))
-                    if (len(image.shape) != 3) or (image.shape[2] != 3):
-                        raise Exception('Invalid image dimensions')
+            img = image.load_img(
+                os.path.join(self.image_directory, 'pic_{}.png'.format(ID)), 
+                target_size=self.dim)
 
-                    # Store sample   
-                    X[i,] = resize(image, [*self.dim, self.n_channels])
+            # Store sample   
+            X[i,] =  preprocess_input(image.img_to_array(img))
 
-                    # Store class
-                    y[i] = self.labels[resolved_ID]
-                    
-                    counter=0
-                    break
-
-                except Exception as e:
-                    first_time = False
-                    
-                    counter += 1
-                    if counter > 10:
-                        print(resolved_ID)
-                        print(e)
-                        print('Counter: {}'.format(counter))
+            # Store class
+            y[i] = self.labels[ID]
 
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
 
@@ -152,6 +135,9 @@ warnings.filterwarnings('ignore')
 # In[ ]:
 
 
+train_images_directory = '../data/train_images_readable/'
+validation_images_directory = '../data/validation_images_readable/'
+
 train_labels = ((pd
     .read_csv('https://s3-us-west-2.amazonaws.com/furniture-kaggle/train-labels.csv')
     .set_index('image_id')['label_id'] - 1)
@@ -162,8 +148,11 @@ validation_labels = ((pd
     .set_index('image_id')['label_id'] - 1)
     .to_dict())
 
-train_ids = list(train_labels.keys())
-validation_ids = list(validation_labels.keys())
+train_filenames = os.listdir(train_images_directory)
+train_ids = [filename.split('.')[0].split('_')[1] for filename in train_filenames]
+
+validation_filenames = os.listdir(validation_images_directory)
+validation_ids = [filename.split('.')[0].split('_')[1] for filename in validation_filenames]
 
 
 # In[ ]:
@@ -178,17 +167,26 @@ params = {'dim': (299, 299),
           'shuffle': True}
 
 # Generators
-training_generator = DataGenerator(train_ids, train_labels, '../data/train_images/', **params)
-validation_generator = DataGenerator(validation_ids, validation_labels, '../data/validation_images/', **params)
+training_generator = DataGenerator(train_ids, train_labels, train_images_directory, **params)
+validation_generator = DataGenerator(validation_ids, validation_labels, validation_images_directory, **params)
+
+
+# In[ ]:
+
 
 transfer_model.fit_generator(
     generator=training_generator,
     validation_data=validation_generator,
     callbacks=callbacks_list,
     verbose=1,
+    epochs=number_of_epochs,
     use_multiprocessing=True,
-    max_queue_size=100,
-    workers=64)
+    max_queue_size=300,
+    workers=100)
+
+
+# In[ ]:
+
 
 # Load best weights
 transfer_model.load_weights(checkpoints_filepath)
