@@ -4,6 +4,7 @@ variable "vpc_id" {}
 variable "spot_price" {}
 variable "number_of_instances" {}
 variable "volume_size" {}
+variable "instance_ami" {}
 
 provider "aws" {
   region = "${var.region}"
@@ -41,7 +42,7 @@ resource "aws_spot_instance_request" "jupyter" {
   spot_price = "${var.spot_price}"
   count = "${var.number_of_instances}"
 
-  ami = "ami-310c6049"
+  ami = "${var.instance_ami}"
   instance_type = "${var.instance_type}"
   key_name = "spark_key"
   security_groups = ["${aws_security_group.allow_ssh.name}"]
