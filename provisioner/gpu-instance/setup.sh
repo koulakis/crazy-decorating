@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # Set english locale
 sudo locale-gen en_CA.UTF-8
 
@@ -10,10 +8,10 @@ sudo locale-gen en_CA.UTF-8
 
 # Download and unzip datasets
 mkdir /home/ubuntu/data
-(cd /home/ubuntu/ && wget https://s3-us-west-2.amazonaws.com/furniture-kaggle/train_images.zip)
-(cd /home/ubuntu/ && wget https://s3-us-west-2.amazonaws.com/furniture-kaggle/validation_images.zip)
-(cd /home/ubuntu/ && wget https://s3-us-west-2.amazonaws.com/furniture-kaggle/test_images.zip)
+(cd /home/ubuntu/ && wget https://s3-us-west-2.amazonaws.com/furniture-kaggle/train_images_readable.zip)
+(cd /home/ubuntu/ && wget https://s3-us-west-2.amazonaws.com/furniture-kaggle/validation_images_readable.zip)
+(cd /home/ubuntu/ && wget https://s3-us-west-2.amazonaws.com/furniture-kaggle/test_images_readable.zip)
 
-(cd /home/ubuntu/ && unzip train_images.zip)
-(cd /home/ubuntu/ && unzip validation_images.zip)
-(cd /home/ubuntu/ && unzip test_images.zip)
+(cd /home/ubuntu/ && unzip train_images_readable.zip)
+(cd /home/ubuntu/ && unzip validation_images_readable.zip)
+(cd /home/ubuntu/ && unzip test_images_readable.zip)

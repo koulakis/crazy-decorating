@@ -3,122 +3,71 @@
 
 # # Resize images
 
-# In[91]:
+# In[1]:
 
 
+import os
 from skimage.io import imread
 from skimage.transform import resize
-import os
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-def resize_images(input_dir, output_dir, size):
-    filenames = os.listdir(input_dir)
-    
-    for filename in filenames:
-        image_name = filename.split('.')[0]
-        try:
-            image = imread(os.path.join(input_dir, filename))
-            save_path = os.path.join(output_dir, '{}.npy'.format(image_name))
-            np.save(
-                save_path, 
-                resize(image, size))
-        except Exception as e:
-            print(e)
-            print(image_name.split('_')[1])
-
-
-# In[80]:
-
-
-widths = []
-
-for filename in paths:
-    try:
-        image = imread(filename)
-        widths.append(image.shape[0])
-    except:
-        print(filename)
-
-
-# In[85]:
-
-
-pd.DataFrame(widths).describe()
-
-
-# In[83]:
-
-
-plt.hist(widths, bins=50)
-plt.show()
-
-
-# In[92]:
-
-
-paths = [os.path.join('../data/validation', filename) for filename in os.listdir('../data/validation')]
-
-
-# In[67]:
-
-
-np.load('../data/resized-validation/pic_1.npy').shape
-
-
-# In[65]:
-
-
-pics = np.array([np.load(path) for path in paths])
+from multiprocessing import Pool
 
 
 # In[ ]:
 
 
-pics.shape
+get_ipython().system('mkdir ../data/train_images_resized')
+get_ipython().system('mkdir ../data/validation_images_resized')
+get_ipython().system('mkdir ../data/test_images_resized')
 
 
-# In[61]:
+# In[ ]:
 
 
-resize_images('../data/validation', '../data/resized-validation', (300, 300))
+def resize_and_export(filename, output_directory, size):
+    image = imread(os.path.join(input_dir, filename))
+    save_path = os.path.join(output_directory, '{}.npy'.format(filename))
+    np.save(
+        save_path,
+        resize(image, size))
+
+def resize_images(input_directory, output_directory, size, pool_size):
+    image_file_names = os.listdir(input_directory)
+    
+    pool = Pool(pool_size)
+    
+    for filename in image_file_names:
+        pool.apply_async(resize_and_export, [filename, input_directory, output_directory, size])
+        
+    pool.close()
+    pool.join()
 
 
-# In[34]:
+# In[ ]:
 
 
-min([i.shape[0] for i in images])
+resize_images(
+    '../data/train_images_readable/', 
+    '../data/train_images_resized/', 
+    (299, 299), 
+    20)
 
 
-# In[36]:
+# In[ ]:
 
 
-min([i.shape[1] for i in images])
+resize_images(
+    '../data/validation_images_readable/', 
+    '../data/validation_images_resized/', 
+    (299, 299), 
+    20)
 
 
-# In[27]:
+# In[ ]:
 
 
-plt.hist([i.shape[0] for i in images])
-plt.show()
-
-
-# In[28]:
-
-
-plt.hist([i.shape[1] for i in images])
-plt.show()
-
-
-# In[90]:
-
-
-plt.clf()
-
-plt.figure(figsize=(10, 100))
-for i, image in enumerate(images[:10]):
-    plt.subplot(10, 1, i + 1)
-    plt.imshow(resize(image, (300, 300)))
-plt.show()
+resize_images(
+    '../data/test_images_readable/', 
+    '../data/test_images_resized/', 
+    (299, 299), 
+    20)
 
