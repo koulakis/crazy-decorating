@@ -149,10 +149,10 @@ validation_labels = ((pd
     .to_dict())
 
 train_filenames = os.listdir(train_images_directory)
-train_ids = [filename.split('.')[0].split('_')[1] for filename in train_filenames]
+train_ids = [int(filename.split('.')[0].split('_')[1]) for filename in train_filenames]
 
 validation_filenames = os.listdir(validation_images_directory)
-validation_ids = [filename.split('.')[0].split('_')[1] for filename in validation_filenames]
+validation_ids = [int(filename.split('.')[0].split('_')[1]) for filename in validation_filenames]
 
 
 # In[ ]:
