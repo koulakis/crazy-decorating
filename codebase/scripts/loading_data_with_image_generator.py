@@ -64,10 +64,10 @@ callbacks_list = [checkpoint, early]
 
 
 batch_size = 32
-target_size = (299, 299, 3)
+target_size = (299, 299)
 
-train_images_directory = '../data/train_images_readable/'
-validation_images_directory = '../data/validation_images_readable/'
+train_images_directory = '../data/train_images_categorized/'
+validation_images_directory = '../data/validation_images_categorized/'
 
 train_datagen = ImageDataGenerator()
 validation_datagen = ImageDataGenerator()
@@ -75,14 +75,12 @@ validation_datagen = ImageDataGenerator()
 train_generator = train_datagen.flow_from_directory(
     train_images_directory, 
     target_size=target_size, 
-    batch_size=batch_size,
-    class_mode='binary') 
+    batch_size=batch_size) 
 
 validation_generator = validation_datagen.flow_from_directory(
     validation_images_directory,
     target_size=target_size,
-    batch_size=batch_size,
-    class_mode='binary')
+    batch_size=batch_size)
 
 
 # ## Model training
